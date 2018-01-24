@@ -7,6 +7,7 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
+    private static int mRemainClient;
 
     public static void main(String[] args) throws InterruptedException {
         ArrayList<Client> clients = new ArrayList<>();
@@ -33,7 +34,7 @@ public class Main {
                 System.out.println("Introduzca el tiempo de procesamiento del producto #" + productId);
                 int processingSeconds = intScanner.nextInt();
 
-                Product currentProduct = new Product(productId, price, processingSeconds);
+                Product currentProduct = new Product(currentClient.getId(), productId, price, processingSeconds);
                 productId++;
                 currentClient.addProducts(currentProduct);
 
@@ -52,18 +53,29 @@ public class Main {
             isUserInputClients = (clientResponse.equals("y") || clientResponse.equals("Y"));
         }
 
+        processClients(clients);
+    }
+
+    private static void processClients(ArrayList<Client> clients) {
         // Process all client products
+        int remainClients = clients.size();
+
         System.out.println("Procesando todos los productos de los clientes...");
         for (Client client : clients) {
             System.out.println("Cliente #" + client.getId());
             ArrayList<Product> products = client.getProducts();
             for (Product product : products) {
-                product.start();
-                Thread.sleep(product.getProcessingSeconds() * 1000);
+                product.start(
+                    productToRemove -> client.removeProduct(productToRemove)
+                );
             }
         }
 
         System.out.println("\n\n\n");
         System.out.println("¡Todos los productos han sido procesados!");
+    }
+
+    public interface AfterPayCallback {
+        void done(Product product);
     }
 }

@@ -27,4 +27,8 @@ public class Client {
     public void setId(int id) {
         this.id = id;
     }
+
+    public void removeProduct(Product product) {
+        products.remove(product);
+    }
 }
