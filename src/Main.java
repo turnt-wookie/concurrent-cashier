@@ -4,34 +4,66 @@ import syncronized.Bank;
 import syncronized.ClientQueue;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
-        // TODO: scan this data by console
+    public static void main(String[] args) throws Exception {
         ArrayList<Client> clients = new ArrayList<>();
-        Product product1 = new Product(1, 12, 2);
-        Product product2 = new Product(2, 12, 4);
-        Product product3 = new Product(3, 12, 6);
-        Client client1 = new Client(1);
-        client1.addProducts(product1,product2,product3);
+        ArrayList<Product> products = new ArrayList<>();
 
-        Product product4 = new Product(4, 12, 1);
-        Product product5 = new Product(5, 12, 3);
-        Product product6 = new Product(6, 12, 5);
-        Client client2 = new Client(2);
-        client2.addProducts(product4,product5,product6);
+        products.add(null);
+        products.add(new Product(1, 12, 2));
+        products.add(new Product(2, 12, 4));
+        products.add(new Product(3, 12, 6));
+        products.add(new Product(4, 12, 1));
+        products.add(new Product(5, 12, 3));
+        products.add(new Product(6, 12, 5));
 
-        clients.add(client1);
-        clients.add(client2);
-        clients.add(client1);
-        clients.add(client2);
-        clients.add(client1);
-        clients.add(client2);
+        Boolean isUserInputClients = true;
+        int clientId = 1;
+        Scanner stringScanner = new Scanner(System.in);
+        Scanner intScanner = new Scanner(System.in);
+
+        System.out.println("~ .:: | BIENVENIDO | ::. ~");
+        System.out.println("\n\n");
+
+        // Clients loop
+        while (isUserInputClients) {
+            Client currentClient = new Client(clientId);
+            System.out.println("Introduzca los productos del Cliente #" + clientId);
+
+            Boolean isUserInputProducts = true;
+            int productId = 1;
+            // Products loop
+            while (isUserInputProducts) {
+                System.out.println("Introduzca el id del producto #" + productId + " para el cliente #" + clientId);
+                int clientProductId = intScanner.nextInt();
+                currentClient.addProducts(products.get(clientProductId));
+                productId++;
+
+                // End product loop?
+                System.out.println("¿Desea introducir otro producto? (y/n)");
+                String productResponse = stringScanner.nextLine();
+                isUserInputProducts = (productResponse.equals("y") || productResponse.equals("Y"));
+            }
+
+            clients.add(currentClient);
+            clientId++;
+
+            // End client loop?
+            System.out.println("¿Desea introducir otro cliente? (y/n)");
+            String clientResponse = stringScanner.nextLine();
+            isUserInputClients = (clientResponse.equals("y") || clientResponse.equals("Y"));
+        }
+
+        System.out.println("\n\n\n\n");
+        System.out.println("Poniendo cajeros en cola...");
+        System.out.println("\n");
 
         // Create the shared elements
         Bank bank = new Bank(500);
-        ClientQueue clientQueue= new ClientQueue(clients);
+        ClientQueue clientQueue = new ClientQueue(clients);
 
         // Set the shared elements to the cashiers
         Cashier cashier1 = new Cashier(1, bank, clientQueue);
